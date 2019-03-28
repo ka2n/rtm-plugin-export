@@ -14,6 +14,15 @@ const fs = require('fs');
  */
 function action(args, env) {
 
+  // Get format
+  let format = env.format;
+  if (format && format !== 'tab' && format !== 'csv') {
+  	rtm.log.spinner.error("Invalid format")
+  	return rtm.finish()
+  } else if (!format) {
+  	format = 'csv';
+  }
+
   // Get filter
   let filter = rtm.filter(args.length > 0 ? args[0].join(' ') : '');
 
@@ -31,7 +40,7 @@ function action(args, env) {
       }
 
       // Process the Tasks
-      let rtn = _processTasks(tasks);
+      let rtn = _processTasks(tasks, format);
 
       // Print the export
       _print(rtn, out, function() {
@@ -54,7 +63,7 @@ function action(args, env) {
  * @returns {string} CSV string to print / save
  * @private
  */
-function _processTasks(tasks) {
+function _processTasks(tasks, format) {
 
   // String to print or write
   let rtn = "";
@@ -98,7 +107,7 @@ function _processTasks(tasks) {
       task.modified
     ];
     rtn += "\n";
-    rtn += _createLine(row);
+    rtn += _createLine(row, format);
   }
 
   // Return the processed string
@@ -106,11 +115,15 @@ function _processTasks(tasks) {
 
 
   // Build a CSV line: quote and join
-  function _createLine(items) {
-    for ( let i = 0; i < items.length; i++ ) {
-      items[i] = '"' + items[i] + '"';
+  function _createLine(items, format) {
+    if (format === 'csv') {
+    	for ( let i = 0; i < items.length; i++ ) {
+    	  items[i] = '"' + items[i] + '"';
+    	}
+    	return(items.join(","));
+    } else if (format === 'tab') {
+    	return(items.join("\t"));
     }
-    return(items.join(","));
   }
 
 }
@@ -169,7 +182,11 @@ module.exports = {
     {
       option: "-o, --out <file>",
       description: "output file to write tasks to"
-    }
+    },
+    {
+      option: "--format <format>",
+      description: "output format"
+    },
   ],
 
   /**
