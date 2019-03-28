@@ -1,5 +1,5 @@
 {
-  "name": "rtm-cli-plugin-export",
+  "name": "rtm-plugin-export",
   "version": "1.0.0",
   "description": "RTM Plugin - Export",
   "keywords": [
@@ -18,5 +18,6 @@
     "rtm-cli": ">=1.3.0",
     "rtm-api": ">=1.1.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {}
 }
